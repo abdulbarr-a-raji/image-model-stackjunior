@@ -1,20 +1,18 @@
-import { loadImages } from 'data.js';
+import { loadImages } from './data.js';
 
 function getCNNModel() {
 
-    model = tf.sequential();
+    const model = tf.sequential();
 
     /*
-    image sizes: 512x512, 512x512, 341x512, 341x512, 341x341
+    image sizes: not needed, all are resized to 512x512
     */
-    const IMAGE_WIDTH = 341;
-    const IMAGE_HEIGHT = 341;
+    const IMAGE_WIDTH = 512;
+    const IMAGE_HEIGHT = 512;
     const IMAGE_DEPTH = 3; // RGB
     // const NUM_OUTPUT_CLASSES = 2;
 
     const optimizer = tf.train.adam();
-    
-    // resize all images
 
     model.add(tf.layers.conv2d({
         inputShape: [IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_DEPTH],
@@ -56,14 +54,18 @@ function getCNNModel() {
 
 async function train(model, data) {
     
-    const BATCH_SIZE = 512;
+    const BATCH_SIZE = 3;
     const NUM_EPOCHS = 10;
     const TRAIN_DATA_SIZE = 12;
     const TEST_DATA_SIZE = 0;
 
-    return model.fit(trainXs, trainYs, {
+    console.log("Fitting...");
+    return model.fit(data[0] /* xs (aka features) */, 
+        data[1] /* ys (aka labels) */, {
         batchSize: BATCH_SIZE,
         epochs: NUM_EPOCHS//, 
         // validationSplit: 0.2 // optional
     });
 }
+
+export {getCNNModel, train};
