@@ -1,15 +1,18 @@
-// import * as tf from '@tensorflow/tfjs';
+import { MIN_WIDTH, MIN_HEIGHT } from './data.js';
 
-function run () {
+async function run () {
 
-    const predictor = loadModel();
-    const ex1_inference = makeInference(predictor, getExample("example1"));
-    const ex2_inference = makeInference(predictor, getExample("example2"));
-    const ex3_inference = makeInference(predictor, getExample("example3"));
+    const tensors_batch = [];
+    for(let ex of ['example1', 'example2', 'example3']) {
+        tensors_batch.push(getExample(ex));
+    }
+    const batch_tensor = tf.stack(tensors_batch);
 
-    console.log("1st example:", ex1_inference);
-    console.log("2nd example:", ex2_inference);
-    console.log("3rd example:", ex3_inference);
+    const predictor = await loadModel();
+    const inferences = makeInferences(predictor, batch_tensor);
+
+    inferences.print();
+    console.log("decoded:", await decodePreds(inferences));
 
 }
 
@@ -24,9 +27,9 @@ async function loadModel() {
     
 }
 
-function makeInference(trainedModel, imgTensor) {
+function makeInferences(trainedModel, imgTensors) {
 
-    const output = trainedModel.predict(imgTensor);
+    const output = trainedModel.predictOnBatch(imgTensors);
 
     return output;
 
@@ -41,22 +44,39 @@ function getExample(id) {
     const intHeight = parseInt(divStyles.height.replace("px", ""));
 
     const img = new Image();
-    img.src = imageUrl;
+    img.src = imageUrl.slice(5, -2); // .slice() removes the url("") wrapper text;
 
     const canvas = document.createElement('canvas');
     canvas.width = intWidth;
-    console.log(canvas.width, "vs", intWidth)
 
     canvas.height = intHeight;
-    console.log(canvas.height, "vs", intHeight)
-
 
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0, intWidth, intHeight);
 
-    const imageTensor = tf.browser.fromPixels(canvas);
+    const imageTensor = tf.browser.fromPixels(canvas)
+        .resizeBilinear([MIN_WIDTH, MIN_HEIGHT])
+        .toFloat()
+        .div(tf.scalar(255));
 
     return imageTensor;
+
+}
+
+async function decodePreds(preds, legend = {"sad":0, "smiling":1}) {
+
+    const decoded = [];
+    const values = await preds.array();
+    for(let val of values) {
+        for(let [classification, code] of Object.entries(legend)) {
+            if (val == code) {
+                decoded.push(classification);
+                break;
+            }
+        }
+    }
+
+    return decoded;
 
 }
 

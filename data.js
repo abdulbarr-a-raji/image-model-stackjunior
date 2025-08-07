@@ -72,4 +72,4 @@ function preprocessImage(img) {
 
 }
 
-export {loadImages};
+export {loadImages, MIN_WIDTH, MIN_HEIGHT};

@@ -55,7 +55,7 @@ function getCNNModel() {
 async function train(model, data) {
     
     const BATCH_SIZE = 3;
-    const NUM_EPOCHS = 10;
+    const NUM_EPOCHS = 50;
     const TRAIN_DATA_SIZE = 12;
     const TEST_DATA_SIZE = 0;
 
