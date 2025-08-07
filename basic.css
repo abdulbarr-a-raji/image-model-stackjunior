@@ -1,0 +1,29 @@
+body {
+    padding: 0px;
+    margin: 0px;
+}
+
+div.image-container {
+    width: 40%;
+    height: auto;
+    padding: 50px;
+    background-color: #e9e9e9;
+    background-size: 100% 100%;
+    /* position: relative;
+    top: 300px; */
+}
+
+div.example-pics {
+    width: 300px;
+    height: 300px;
+    margin: 50px auto;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+button {
+    /* display: inline; */
+    margin: 25px auto;
+    position: relative;
+    left: 10%;
+}

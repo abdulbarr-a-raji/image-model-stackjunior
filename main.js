@@ -1,7 +1,7 @@
 import { getCNNModel, train } from './model.js';
 import { loadImages } from './data.js';
 
-async function loaderMethod () {
+async function runMain () {
 
     console.log("Button clicked...");
 
@@ -14,6 +14,8 @@ async function loaderMethod () {
     train(convnet, trainingData);
     console.log("Training complete...!");
 
+    const savedModel = await convnet.save("downloads://pretrained-model-v1");
+
 }
 
-document.getElementById("load-images").addEventListener("click", loaderMethod);
+document.getElementById("load-images").addEventListener("click", runMain);

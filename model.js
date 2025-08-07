@@ -39,7 +39,7 @@ function getCNNModel() {
     model.add(tf.layers.dense({
         units: 1,
         kernelInitializer: 'varianceScaling',
-        activation: 'softmax'
+        activation: 'sigmoid'
     }));
 
     model.compile({
