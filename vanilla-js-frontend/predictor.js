@@ -12,7 +12,7 @@ async function run () {
     const inferences = makeInferences(predictor, batch_tensor);
 
     inferences.print();
-    console.log("decoded:", await decodePreds(inferences));
+    console.log("decoded:", await decodePredictions(inferences));
 
 }
 
@@ -63,11 +63,13 @@ function getExample(id) {
 
 }
 
-async function decodePreds(preds, legend = {"sad":0, "smiling":1}) {
+async function decodePredictions(preds, legend = {"sad":0, "smiling":1}) {
 
     const decoded = [];
-    const values = await preds.array();
-    for(let val of values) {
+    const vals = await tf.tidy(() => {
+        return tf.floor(preds.mul(Object.values(legend).length));
+    }).array(); // categorises model predictions
+    for(let val of vals) {
         for(let [classification, code] of Object.entries(legend)) {
             if (val == code) {
                 decoded.push(classification);
